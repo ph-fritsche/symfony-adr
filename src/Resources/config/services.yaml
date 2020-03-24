@@ -1,0 +1,17 @@
+services:
+
+    nextdev\AdrBundle\EventSubscriber\ControllerSubscriber:
+        tags: ['kernel.event_subscriber']
+        
+    nextdev\AdrBundle\EventSubscriber\ViewSubscriber:
+        tags: ['kernel.event_subscriber']
+
+    nextdev\AdrBundle\Responder:
+
+    nextdev\AdrBundle\Responder\ScalarHandler:
+        tags:
+            - { name: nextdev_adr.responder, priority: -1024 }
+
+    nextdev\AdrBundle\Responder\ObjectHandler:
+        tags:
+            - { name: nextdev_adr.responder, priority: -1024 }
