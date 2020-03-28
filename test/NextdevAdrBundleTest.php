@@ -3,6 +3,7 @@ namespace nextdev\AdrBundle;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use nextdev\AdrBundle\DependencyInjection\Compiler\ResponseHandlerPass;
+use nextdev\AdrBundle\DependencyInjection\NextdevAdrExtension;
 
 class NextdevAdrBundleTest extends \PHPUnit\Framework\TestCase
 {
@@ -13,8 +14,15 @@ class NextdevAdrBundleTest extends \PHPUnit\Framework\TestCase
         $container->expects($this->once())->method('addCompilerPass')
             ->with($this->isInstanceOf(ResponseHandlerPass::class));
 
-        $bundle = new NextdevAdrBundle();
+        $bundle = new nextdevAdrBundle();
 
         $bundle->build($container);
+    }
+
+    public function testGetContainerExtension()
+    {
+        $bundle = new nextdevAdrBundle();
+
+        $this->assertInstanceOf(NextdevAdrExtension::class, $bundle->getContainerExtension());
     }
 }
