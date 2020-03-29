@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException;
+use Throwable;
 
 class ResponseHandlerPass implements CompilerPassInterface
 {
@@ -44,6 +45,14 @@ class ResponseHandlerPass implements CompilerPassInterface
 
             $serviceClass = $definition->getClass();
             if (isset($serviceClass)) {
+                try {
+                    if (!\class_exists($serviceClass)) {
+                        continue;
+                    }
+                } catch (Throwable $e) {
+                    continue;
+                }
+
                 if (!\in_array(ResponseHandlerInterface::class, \class_implements($serviceClass))) {
                     continue;
                 }

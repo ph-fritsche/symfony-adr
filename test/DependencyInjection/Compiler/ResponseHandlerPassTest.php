@@ -57,6 +57,24 @@ class ResponseHandlerPassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([], $this->responderDefinition->getArgument('$handlerMap'));
     }
 
+    public function testIgnoreNotLoadableClass()
+    {
+        $this->addDefinition('FooClass', 'foo');
+
+        try {
+            $tempAutoload = function ($className) {
+                throw new LogicException($className);
+            };
+            spl_autoload_register($tempAutoload, true, true);
+
+            $this->pass->process($this->container);
+        } finally {
+            spl_autoload_unregister($tempAutoload);
+        }
+
+        $this->assertEquals([], $this->responderDefinition->getArgument('$handlerMap'));
+    }
+
     public function testTaggedResponseHandler()
     {
         $fooHandler = $this->addHandlerMockDefinition('fooId', ['payloadA', 'payloadB']);
