@@ -69,20 +69,23 @@ class ResponseHandlerPass implements CompilerPassInterface
             }
 
             $service = $container->get($serviceId);
-            $supportedTypes = $service->getSupportedPayloadTypes();
+            $supportedTypes = $this->normalizeSupportedPayloadTypes($service->getSupportedPayloadTypes());
 
             foreach ($tags as $tag) {
-                $diff = \array_diff($tag['for'] ?? [], $supportedTypes);
+                $diff = \array_diff($tag['for'] ?? [], \array_keys($supportedTypes));
                 if (\count($diff)) {
                     throw new LogicException(\sprintf(
                         'ResponseHandler %s only supports the following types: %s',
                         $serviceId,
-                        \implode(', ', $supportedTypes)
+                        \implode(', ', \array_keys($supportedTypes))
                     ));
                 }
 
-                foreach ($tag['for'] ?? $supportedTypes as $t) {
-                    $handlerMap[Responder::TYPETRANSLATE[$t] ?? $t][] = [$serviceId, $tag['priority'] ?? 0];
+                foreach ($tag['for'] ?? \array_keys($supportedTypes) as $t) {
+                    $handlerMap[Responder::TYPETRANSLATE[$t] ?? $t][] = [
+                        $serviceId,
+                        $tag['priority'] ?? $supportedTypes[$t]
+                    ];
                 }
             }
 
@@ -99,5 +102,21 @@ class ResponseHandlerPass implements CompilerPassInterface
         $responder->setArgument('$container', new Reference(ContainerInterface::class));
         $responder->setArgument('$handlerMap', $handlerMap);
         $responder->setArgument('$handlerObjects', $handlerObjects);
+    }
+
+    private function normalizeSupportedPayloadTypes(
+        array $supportedTypes
+    ): array {
+        $normalized = [];
+
+        foreach ($supportedTypes as $k => $v) {
+            if (\is_string($k)) {
+                $normalized[$k] = (int) $v;
+            } else {
+                $normalized[$v] = 0;
+            }
+        }
+
+        return $normalized;
     }
 }

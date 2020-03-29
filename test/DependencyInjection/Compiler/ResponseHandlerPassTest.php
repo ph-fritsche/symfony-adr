@@ -77,7 +77,7 @@ class ResponseHandlerPassTest extends \PHPUnit\Framework\TestCase
 
     public function testTaggedResponseHandler()
     {
-        $fooHandler = $this->addHandlerMockDefinition('fooId', ['payloadA', 'payloadB']);
+        $fooHandler = $this->addHandlerMockDefinition('fooId', ['payloadA' => 456, 'payloadB']);
         $fooHandler->addTag(ResponseHandlerPass::TAG);
 
         $barHandler = $this->addHandlerMockDefinition('barId', ['payloadB']);
@@ -91,7 +91,7 @@ class ResponseHandlerPassTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 'payloadA' => [
-                    ['fooId', 0],
+                    ['fooId', 456],
                 ],
                 'payloadB' => [
                     ['barId', 123],
@@ -114,14 +114,14 @@ class ResponseHandlerPassTest extends \PHPUnit\Framework\TestCase
 
     public function testAutotaggedResponseHandler()
     {
-        $this->addHandlerMockDefinition('fooId', ['payloadA']);
+        $this->addHandlerMockDefinition('fooId', ['payloadA' => 123]);
 
         $this->pass->process($this->container);
 
         $this->assertEquals(
             [
                 'payloadA' => [
-                    ['fooId', 0],
+                    ['fooId', 123],
                 ],
             ],
             $this->responderDefinition->getArgument('$handlerMap')
