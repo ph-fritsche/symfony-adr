@@ -2,6 +2,7 @@
 namespace nextdev\AdrBundle\Responder;
 
 use stdClass;
+use PHPUnit\Framework\Assert;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ResponderTest extends \PHPUnit\Framework\TestCase
@@ -116,36 +117,56 @@ class ResponderTest extends \PHPUnit\Framework\TestCase
     private function getResponder($handlerMap, $expectedHandlers, $expectedContainerGet): Responder
     {
         $handlerObjects = [];
-        $expectedPosition = 0;
-        $relay = function ($method, ...$arguments) {
-            return $this->$method(...$arguments);
-        };
-        $assertPosition = function ($expectedPosition) {
-            static $actualPosition = 0;
-            $this->assertEquals($expectedPosition, $actualPosition++);
-        };
-    
-
-        foreach ($expectedHandlers as $description) {
+        foreach ($expectedHandlers as &$description) {
             if (\is_string($description)) {
                 $description = [$description];
             }
-            $handlerObjects[$description[0]][$expectedPosition++] = $description;
+            $handlerObjects[$description[0]][] = $description;
         }
+    
+        $positionAssert = new class($expectedHandlers) {
+            private $expectedHandlers;
+            private $actualHandlers = [];
+
+            public function __construct($expectedHandlers)
+            {
+                $this->expectedHandlers = $expectedHandlers;
+            }
+
+            public function __destruct()
+            {
+                if (\count($this->expectedHandlers) !== \count($this->actualHandlers)) {
+                    Assert::assertEquals(
+                        \array_column($this->expectedHandlers, 0),
+                        $this->actualHandlers,
+                        'Expected handler calls missing.'
+                    );
+                }
+            }
+
+            public function check(
+                string $key
+            ): void {
+                Assert::assertEquals(
+                    $this->expectedHandlers[\count($this->actualHandlers)][0] ?? null,
+                    $key,
+                    \sprintf('Unexpected handler call at position "%d"', \count($this->actualHandlers))
+                );
+                $this->actualHandlers[] = $key;
+            }
+        };
 
         $handlerObjects = \array_map(
             fn($descriptions) => new class(
-            $assertPosition,
-            $relay,
+            $positionAssert,
             $descriptions
             ) implements ResponseHandlerInterface
             {
-                public function __construct($assertPosition, $relay, $descriptions)
+                public function __construct($positionAssert, $descriptions)
                 {
-                    $this->assertPosition = $assertPosition;
-                    $this->relay = $relay;
-                    $this->expectedPositions = \array_keys($descriptions);
-                    $this->descriptions = \array_values($descriptions);
+                    $this->positionAssert = $positionAssert;
+                    $this->descriptions = $descriptions;
+                    $this->key = $this->descriptions[0][0];
                     $this->callCount = 0;
                 }
 
@@ -159,7 +180,7 @@ class ResponderTest extends \PHPUnit\Framework\TestCase
                 ) {
                     $call = $this->callCount++;
 
-                    ($this->assertPosition)($this->expectedPositions[$call] ?? false);
+                    $this->positionAssert->check($this->key);
 
                     if (\array_key_exists('set', $this->descriptions[$call])) {
                         $event->payload = $this->descriptions[$call]['set'];

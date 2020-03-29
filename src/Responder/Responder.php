@@ -74,7 +74,9 @@ class Responder
                     }
                 }
             }
-        } while (false);
+
+            break;
+        } while (true);
 
         return $payloadEvent->payload;
     }
