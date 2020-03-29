@@ -1,4 +1,6 @@
 services:
+    _defaults:
+        autowire: true
 
     nextdev\AdrBundle\EventSubscriber\ControllerSubscriber:
         tags: ['kernel.event_subscriber']
@@ -6,7 +8,7 @@ services:
     nextdev\AdrBundle\EventSubscriber\ViewSubscriber:
         tags: ['kernel.event_subscriber']
 
-    nextdev\AdrBundle\Responder:
+    nextdev\AdrBundle\Responder\Responder:
 
     nextdev\AdrBundle\Responder\ScalarHandler:
         tags:
