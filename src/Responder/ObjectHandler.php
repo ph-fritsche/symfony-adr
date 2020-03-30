@@ -18,7 +18,7 @@ class ObjectHandler implements ResponseHandlerInterface
             \gettype($payloadEvent->payload);
 
         $p = \strrpos($fullName, '\\');
-        $className = $p !== false ? \substr($fullName, '\\', $p +1) : $fullName;
+        $className = $p !== false ? \substr($fullName, $p +1) : $fullName;
 
         $payloadEvent->payload = [
             $className => $payloadEvent->payload,

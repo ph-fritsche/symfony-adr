@@ -13,6 +13,10 @@ class ObjectHandlerTest extends ResponseHandlerTest
                 [stdClass::class => $o],
             ],
             [
+                $o = new ObjectHandler(),
+                ['ObjectHandler' => $o],
+            ],
+            [
                 'foo',
                 ['string' => 'foo'],
             ]
