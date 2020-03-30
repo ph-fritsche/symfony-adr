@@ -40,6 +40,9 @@ class Responder
     public function handleResponsePayload(
         ResponsePayloadEvent $payloadEvent
     ) {
+        $usedHandlersPayload = [];
+        $usedHandlersLog = [];
+
         do {
             if (\is_object($payloadEvent->payload)) {
                 $types = [
@@ -60,7 +63,13 @@ class Responder
                     if (!isset($this->handlerObjects[$serviceId])) {
                         $this->handlerObjects[$serviceId] = $this->container->get($serviceId);
                     }
-            
+
+                    if (isset($usedHandlersPayload[$serviceId])
+                        && \in_array($payloadEvent->payload, $usedHandlersPayload[$serviceId], true)
+                    ) {
+                        throw new CircularHandlerException($usedHandlersLog);
+                    }
+
                     $oldPayload = $payloadEvent->payload;
 
                     $this->handlerObjects[$serviceId]->handleResponsePayload($payloadEvent);
@@ -70,6 +79,9 @@ class Responder
                     }
 
                     if ($payloadEvent->payload !== $oldPayload) {
+                        $usedHandlersPayload[$serviceId][] = $oldPayload;
+                        $usedHandlersLog[] = [$serviceId, $t];
+
                         continue 3;
                     }
                 }

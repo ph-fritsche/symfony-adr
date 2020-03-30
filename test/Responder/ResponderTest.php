@@ -96,6 +96,23 @@ class ResponderTest extends \PHPUnit\Framework\TestCase
                 ['foo', 'bar'],
                 ['foo', 'bar'],
             ],
+            'circular handler' => [
+                'foo',
+                [
+                    'int' => [
+                        'foo',
+                    ],
+                    'string' => [
+                        'bar',
+                    ],
+                ],
+                [
+                    ['bar', 'set' => 3],
+                    ['foo', 'set' => 'foo'],
+                ],
+                [],
+                CircularHandlerException::class,
+            ],
         ];
     }
 
@@ -106,10 +123,15 @@ class ResponderTest extends \PHPUnit\Framework\TestCase
         $payload,
         $handlerMap,
         $expectedHandlers,
-        $expectedContainerGet = []
+        $expectedContainerGet = [],
+        $expectedException = null
     ) {
         $event = $this->getResponsePayloadEvent($payload);
         $responder = $this->getResponder($handlerMap, $expectedHandlers, $expectedContainerGet);
+
+        if (isset($expectedException)) {
+            $this->expectException($expectedException);
+        }
 
         $responder->handleResponsePayload($event);
     }
