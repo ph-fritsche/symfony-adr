@@ -5,12 +5,25 @@ use nextdev\AdrBundle\Responder\Responder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use nextdev\AdrBundle\Responder\ResponsePayloadEvent;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class ViewSubscriberTest extends EventSubscriberTest
 {
-    public function testRelayPayload()
+    public function provideRelayPayload(): array
     {
+        return [
+            ['bar'],
+            [new Response()],
+        ];
+    }
+
+    /**
+     * @dataProvider provideRelayPayload
+     */
+    public function testRelayPayload(
+        $returnPayload
+    ) {
         $payload = 'foo';
         $request = new Request();
         $viewEvent = new ViewEvent(
@@ -27,11 +40,16 @@ class ViewSubscriberTest extends EventSubscriberTest
                     && $event->payload === $payload
                     && $event->request === $request;
             }))
-            ->willReturn('bar');
+            ->willReturn($returnPayload);
 
         $this->getSubscriberObject($responderMock)->onKernelView($viewEvent);
 
-        $this->assertEquals('bar', $viewEvent->getControllerResult());
+        $this->assertEquals(
+            $returnPayload,
+            $viewEvent->isPropagationStopped() && $viewEvent->hasResponse() ?
+                $viewEvent->getResponse() :
+                $viewEvent->getControllerResult()
+        );
     }
 
     protected function getSubscriberObject(

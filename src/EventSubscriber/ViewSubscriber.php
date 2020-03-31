@@ -2,6 +2,7 @@
 namespace nextdev\AdrBundle\EventSubscriber;
 
 use nextdev\AdrBundle\Responder\Responder;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use nextdev\AdrBundle\Responder\ResponsePayloadEvent;
@@ -30,6 +31,12 @@ class ViewSubscriber implements EventSubscriberInterface
         $payloadEvent->payload = $event->getControllerResult();
         $payloadEvent->request = $event->getRequest();
 
-        $event->setControllerResult($this->responder->handleResponsePayload($payloadEvent));
+        $result = $this->responder->handleResponsePayload($payloadEvent);
+
+        if ($result instanceof Response) {
+            $event->setResponse($result);
+        } else {
+            $event->setControllerResult($result);
+        }
     }
 }
