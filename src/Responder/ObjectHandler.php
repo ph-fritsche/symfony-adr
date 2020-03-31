@@ -1,6 +1,8 @@
 <?php
 namespace nextdev\AdrBundle\Responder;
 
+use Symfony\Component\HttpFoundation\Response;
+
 class ObjectHandler implements ResponseHandlerInterface
 {
     public function getSupportedPayloadTypes(): array
@@ -13,6 +15,10 @@ class ObjectHandler implements ResponseHandlerInterface
     public function handleResponsePayload(
         ResponsePayloadEvent $payloadEvent
     ): void {
+        if ($payloadEvent->payload instanceof Response) {
+            return;
+        }
+
         $fullName = \is_object($payloadEvent->payload) ?
             \get_class($payloadEvent->payload) :
             \gettype($payloadEvent->payload);

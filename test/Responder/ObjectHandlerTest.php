@@ -2,6 +2,7 @@
 namespace nextdev\AdrBundle\Responder;
 
 use stdClass;
+use Symfony\Component\HttpFoundation\Response;
 
 class ObjectHandlerTest extends ResponseHandlerTest
 {
@@ -19,7 +20,11 @@ class ObjectHandlerTest extends ResponseHandlerTest
             [
                 'foo',
                 ['string' => 'foo'],
-            ]
+            ],
+            [
+                $o = new Response(),
+                $o,
+            ],
         ];
     }
 
