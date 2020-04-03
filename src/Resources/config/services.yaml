@@ -1,6 +1,12 @@
+parameters:
+    nextdev_adr.classfinder.cache: '%kernel.cache_dir%/loadable_classes.php'
+
 services:
     _defaults:
         autowire: true
+
+    nextdev\AdrBundle\Command\ResponderDebugCommand:
+        tags: ['console.command']
 
     nextdev\AdrBundle\EventSubscriber\ControllerSubscriber:
         tags: ['kernel.event_subscriber']
@@ -17,3 +23,8 @@ services:
     nextdev\AdrBundle\Responder\ObjectHandler:
         tags:
             - { name: nextdev_adr.responder, priority: -1024 }
+
+    nextdev\AdrBundle\Util\ClassFinder:
+        factory: '@nextdev\AdrBundle\Util\ClassFinderFactory'
+
+    nextdev\AdrBundle\Util\ClassFinderFactory:

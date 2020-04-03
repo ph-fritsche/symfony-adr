@@ -37,6 +37,11 @@ class Responder
         $this->handlerObjects = $handlerObjects;
     }
 
+    public function getHandlerMap(): array
+    {
+        return $this->handlerMap;
+    }
+
     public function handleResponsePayload(
         ResponsePayloadEvent $payloadEvent
     ) {

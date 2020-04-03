@@ -7,6 +7,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ResponderTest extends \PHPUnit\Framework\TestCase
 {
+    public function testGetHandlerMap()
+    {
+        /** @var ContainerInterface */
+        $container = $this->createMock(ContainerInterface::class);
+
+        $map = ['foo', 'bar', 'baz'];
+
+        $responder = new Responder($container, $map, []);
+
+        $this->assertEquals($map, $responder->getHandlerMap());
+    }
+
     public function provideHandlePayload()
     {
         return [
