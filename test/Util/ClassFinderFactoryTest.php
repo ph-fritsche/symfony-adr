@@ -29,9 +29,9 @@ class ClassFinderFactoryTest extends TestCase
 
         $this->assertInstanceOf(ClassFinder::class, $finder);
 
-        $loaderProp = new ReflectionProperty(ClassFinder::class, 'classLoader');
+        $loaderProp = new ReflectionProperty(ClassFinder::class, 'classLoaders');
         $loaderProp->setAccessible(true);
-        $this->assertEquals($loader, $loaderProp->getValue($finder));
+        $this->assertEquals([$loader], $loaderProp->getValue($finder));
 
         $cacheProp = new ReflectionProperty(ClassFinder::class, 'configCache');
         $cacheProp->setAccessible(true);
@@ -39,18 +39,6 @@ class ClassFinderFactoryTest extends TestCase
         $cache = $cacheProp->getValue($finder);
         $this->assertInstanceOf(ConfigCache::class, $cache);
         $this->assertEquals($cacheFile, $cache->getPath());
-    }
-
-    public function testExceptionOnInvalidAutoloader()
-    {
-        $factory = new ClassFinderFactory(
-            $this->getKernel('foo'),
-            fn() => false
-        );
-
-        $this->expectException(LogicException::class);
-
-        $factory();
     }
 
     protected function getKernel(

@@ -75,7 +75,7 @@ class ClassFinderTest extends TestCase
         $search,
         $expected
     ): void {
-        $finder = new ClassFinder($this->createMock(ClassLoader::class));
+        $finder = new ClassFinder();
         $classList = new ReflectionProperty(ClassFinder::class, 'classList');
         $classList->setAccessible(true);
         $classList->setValue($finder, $this->classListFixture);
@@ -108,7 +108,7 @@ class ClassFinderTest extends TestCase
         $search,
         $expected
     ): void {
-        $finder = new ClassFinder($this->createMock(ClassLoader::class));
+        $finder = new ClassFinder();
         $classList = new ReflectionProperty(ClassFinder::class, 'classList');
         $classList->setAccessible(true);
         $classList->setValue($finder, $this->classListFixture);
@@ -177,7 +177,7 @@ class ClassFinderTest extends TestCase
         };
         $mapGenerator::$call = 0;
 
-        $finder = new ClassFinder($loader, null, $mapGenerator);
+        $finder = new ClassFinder([$loader], null, $mapGenerator);
 
         $this->assertEquals(\array_keys(\array_merge(...$map)), $finder->getClassList());
     }
@@ -187,9 +187,8 @@ class ClassFinderTest extends TestCase
         $classes = ['foo', 'bar', 'baz'];
 
         $vfs = vfsStream::setup();
-        $classLoader = $this->createMock(ClassLoader::class);
         $cache = new ConfigCache($vfs->url() . '/test.php', true);
-        $finder = new ClassFinder($classLoader, $cache);
+        $finder = new ClassFinder([], $cache);
 
         $dumpMethod = new ReflectionMethod(ClassFinder::class, 'dumpClassList');
         $dumpMethod->setAccessible(true);
@@ -206,9 +205,8 @@ class ClassFinderTest extends TestCase
     public function testExceptionOnCompromisedDumpfile()
     {
         $vfs = vfsStream::setup();
-        $classLoader = $this->createMock(ClassLoader::class);
         $cache = new ConfigCache($vfs->url() . '/test.php', true);
-        $finder = new ClassFinder($classLoader, $cache);
+        $finder = new ClassFinder([], $cache);
 
         $loadMethod = new ReflectionMethod(ClassFinder::class, 'loadClassList');
         $loadMethod->setAccessible(true);

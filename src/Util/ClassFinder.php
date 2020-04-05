@@ -15,18 +15,23 @@ class ClassFinder
         '+' => '(?-i:([A-Z][a-z0-9]+|[A-Z]+)_?)',
     ];
 
-    private ClassLoader $classLoader;
+    /** @var ClassLoader[] */
+    private iterable $classLoaders;
+
     private ?ConfigCache $configCache;
     private ?ClassMapGenerator $classMapGenerator;
 
     private ?array $classList;
-    
+
+    /**
+     * @param ClassLoader[] $classLoaders
+     */
     public function __construct(
-        ClassLoader $classLoader,
+        iterable $classLoaders = [],
         ConfigCache $configCache = null,
         ClassMapGenerator $classMapGenerator = null
     ) {
-        $this->classLoader = $classLoader;
+        $this->classLoaders = $classLoaders;
         $this->configCache = $configCache;
         $this->classMapGenerator = $classMapGenerator;
     }
@@ -39,32 +44,34 @@ class ClassFinder
             return $this->classList;
         }
 
-        $classes[] = $this->classLoader->getClassMap();
-        
-        if ($this->classLoader->isClassMapAuthoritative() === false) {
-            $this->classMapGenerator ??= new ClassMapGenerator();
-
-            foreach ($this->classLoader->getPrefixesPsr4() as $namespace => $dirs) {
-                foreach ($dirs as $dir) {
-                    $classes[] = $this->classMapGenerator->createMap($dir, null, null, $namespace, 'psr-4');
-                }
-            }
-
-            $dirs = $this->classLoader->getFallbackDirsPsr4();
-            foreach ($dirs as $dir) {
-                $classes[] = $this->classMapGenerator->createMap($dir, null, null, null, 'psr-4');
-            }
+        foreach ($this->classLoaders as $loader) {
+            $classes[] = $loader->getClassMap();
             
-            $dirs = $this->classLoader->getPrefixes();
-            foreach ($this->classLoader->getPrefixes() as $namespace => $dirs) {
-                foreach ($dirs as $dir) {
-                    $classes[] = $this->classMapGenerator->createMap($dir, null, null, $namespace, 'psr-0');
-                }
-            }
+            if ($loader->isClassMapAuthoritative() === false) {
+                $this->classMapGenerator ??= new ClassMapGenerator();
 
-            $dirs = $this->classLoader->getFallbackDirs();
-            foreach ($dirs as $dir) {
-                $classes[] = $this->classMapGenerator->createMap($dir, null, null, null, 'psr-0');
+                foreach ($loader->getPrefixesPsr4() as $namespace => $dirs) {
+                    foreach ($dirs as $dir) {
+                        $classes[] = $this->classMapGenerator->createMap($dir, null, null, $namespace, 'psr-4');
+                    }
+                }
+
+                $dirs = $loader->getFallbackDirsPsr4();
+                foreach ($dirs as $dir) {
+                    $classes[] = $this->classMapGenerator->createMap($dir, null, null, null, 'psr-4');
+                }
+                
+                $dirs = $loader->getPrefixes();
+                foreach ($loader->getPrefixes() as $namespace => $dirs) {
+                    foreach ($dirs as $dir) {
+                        $classes[] = $this->classMapGenerator->createMap($dir, null, null, $namespace, 'psr-0');
+                    }
+                }
+
+                $dirs = $loader->getFallbackDirs();
+                foreach ($dirs as $dir) {
+                    $classes[] = $this->classMapGenerator->createMap($dir, null, null, null, 'psr-0');
+                }
             }
         }
 

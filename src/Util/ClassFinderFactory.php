@@ -1,7 +1,6 @@
 <?php
 namespace nextdev\AdrBundle\Util;
 
-use LogicException;
 use Composer\Autoload\ClassLoader;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -25,40 +24,33 @@ class ClassFinderFactory
     public function __invoke()
     {
         return new ClassFinder(
-            $this->getClassLoaderFromAutoload(),
+            $this->getClassLoadersFromAutoload(),
             $this->getCacheFromKernel()
         );
     }
 
-    protected function getClassLoaderFromAutoload(): ClassLoader
+    /**
+     * @return ClassLoader[]
+     */
+    protected function getClassLoadersFromAutoload(): array
     {
+        $loaders = [];
+        
         $autoloadStack = ($this->autoloadStack)();
 
         if (\is_array($autoloadStack)) {
-            $classLoader = \reset($autoloadStack);
-            if (\is_callable($classLoader) && \is_array($classLoader)) {
-                $classLoader = $classLoader[0];
-            }
+            foreach ($autoloadStack as $callback) {
+                if (\is_array($callback) && $callback[0] instanceof DebugClassLoader) {
+                    $callback = $callback[0]->getClassLoader();
+                }
 
-            if ($classLoader instanceof DebugClassLoader) {
-                $classLoader = $classLoader->getClassLoader();
-                if (\is_array($classLoader)) {
-                    $classLoader = $classLoader[0];
+                if (\is_array($callback) && $callback[0] instanceof ClassLoader) {
+                    $loaders[] = $callback[0];
                 }
             }
-        } else {
-            $classLoader = 'spl_autoload';
         }
 
-        if (!$classLoader instanceof ClassLoader) {
-            throw new LogicException(\sprintf(
-                'Autoloader %s is not supported for discovering classes. %s required.',
-                \is_object($classLoader) ? \get_class($classLoader) : (string) $classLoader,
-                ClassLoader::class
-            ));
-        }
-
-        return $classLoader;
+        return $loaders;
     }
 
     protected function getCacheFromKernel(): ConfigCache
