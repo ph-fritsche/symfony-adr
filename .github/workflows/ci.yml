@@ -12,6 +12,8 @@ jobs:
     - run: composer install
     - run: composer lint
     - run: composer test
+      env:
+        XDEBUG_MODE: coverage
     - uses: codecov/codecov-action@v1
       with:
         file: ./coverage/clover.xml
