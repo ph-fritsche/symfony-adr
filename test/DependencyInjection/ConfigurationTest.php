@@ -1,5 +1,5 @@
 <?php
-namespace nextdev\AdrBundle\DependencyInjection;
+namespace Pitch\AdrBundle\DependencyInjection;
 
 use RuntimeException;
 use OutOfBoundsException;

@@ -1,13 +1,13 @@
 <?php
-namespace nextdev\AdrBundle\DependencyInjection\Compiler;
+namespace Pitch\AdrBundle\DependencyInjection\Compiler;
 
 use ReflectionClass;
-use nextdev\AdrBundle\Responder\Responder;
+use Pitch\AdrBundle\Responder\Responder;
 use Symfony\Component\DependencyInjection\Reference;
-use nextdev\AdrBundle\Responder\ResponseHandlerInterface;
+use Pitch\AdrBundle\Responder\ResponseHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use nextdev\AdrBundle\DependencyInjection\NextdevAdrExtension;
+use Pitch\AdrBundle\DependencyInjection\PitchAdrExtension;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
@@ -16,12 +16,12 @@ use Throwable;
 
 class ResponseHandlerPass implements CompilerPassInterface
 {
-    const TAG = NextdevAdrExtension::ALIAS . '.' . 'responder';
+    const TAG = PitchAdrExtension::ALIAS . '.' . 'responder';
 
-    private ?NextdevAdrExtension $extension;
+    private ?PitchAdrExtension $extension;
 
     public function __construct(
-        ?NextdevAdrExtension $extension = null
+        ?PitchAdrExtension $extension = null
     ) {
         $this->extension = $extension;
     }

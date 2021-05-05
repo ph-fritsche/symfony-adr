@@ -1,16 +1,16 @@
 <?php
-namespace nextdev\AdrBundle\DependencyInjection;
+namespace Pitch\AdrBundle\DependencyInjection;
 
-use nextdev\AdrBundle\EventSubscriber\ControllerSubscriber;
+use Pitch\AdrBundle\EventSubscriber\ControllerSubscriber;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class NextdevAdrExtensionTest extends \PHPUnit\Framework\TestCase
+class PitchAdrExtensionTest extends \PHPUnit\Framework\TestCase
 {
     public function testAlias()
     {
-        $extension = new NextdevAdrExtension();
+        $extension = new PitchAdrExtension();
 
-        $this->assertEquals(NextdevAdrExtension::ALIAS, $extension->getAlias());
+        $this->assertEquals(PitchAdrExtension::ALIAS, $extension->getAlias());
     }
 
     public function testInjectGraceful()
@@ -21,7 +21,7 @@ class NextdevAdrExtensionTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $extension = new NextdevAdrExtension();
+        $extension = new PitchAdrExtension();
         $container = new ContainerBuilder();
 
         $extension->load([$config], $container);

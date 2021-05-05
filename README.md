@@ -17,8 +17,8 @@ Now instead of registering a bunch of event listeners to be iterated through, im
 ```php
 namespace App\Responder;
 
-use nextdev\AdrBundle\Responder\ResponseHandlerInterface;
-use nextdev\AdrBundle\Responder\ResponsePayloadEvent;
+use Pitch\AdrBundle\Responder\ResponseHandlerInterface;
+use Pitch\AdrBundle\Responder\ResponsePayloadEvent;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Entity\MyPayload;
@@ -62,7 +62,7 @@ You can reserve this event for truly unexpected behavior without repeating simil
 
 Define which exceptions should be catched for all controllers and be treated as response payload:
 ```yaml
-nextdev_adr:
+pitch_adr:
     graceful:
         - { value: RuntimeException, not: [BadRuntime, OtherBadRuntime] }
         - Foo
@@ -75,7 +75,7 @@ you can define extra rules for your controller methods per annotation:
 ```php
 namespace App\Controller;
 
-use nextdev\AdrBundle\Configuration\Graceful;
+use Pitch\AdrBundle\Configuration\Graceful;
 
 class MyController
 {

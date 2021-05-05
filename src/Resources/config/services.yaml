@@ -1,30 +1,30 @@
 parameters:
-    nextdev_adr.classfinder.cache: '%kernel.cache_dir%/loadable_classes.php'
+    pitch_adr.classfinder.cache: '%kernel.cache_dir%/loadable_classes.php'
 
 services:
     _defaults:
         autowire: true
 
-    nextdev\AdrBundle\Command\ResponderDebugCommand:
+    Pitch\AdrBundle\Command\ResponderDebugCommand:
         tags: ['console.command']
 
-    nextdev\AdrBundle\EventSubscriber\ControllerSubscriber:
+    Pitch\AdrBundle\EventSubscriber\ControllerSubscriber:
         tags: ['kernel.event_subscriber']
         
-    nextdev\AdrBundle\EventSubscriber\ViewSubscriber:
+    Pitch\AdrBundle\EventSubscriber\ViewSubscriber:
         tags: ['kernel.event_subscriber']
 
-    nextdev\AdrBundle\Responder\Responder:
+    Pitch\AdrBundle\Responder\Responder:
 
-    nextdev\AdrBundle\Responder\ScalarHandler:
+    Pitch\AdrBundle\Responder\ScalarHandler:
         tags:
-            - { name: nextdev_adr.responder, priority: -1024 }
+            - { name: pitch_adr.responder, priority: -1024 }
 
-    nextdev\AdrBundle\Responder\ObjectHandler:
+    Pitch\AdrBundle\Responder\ObjectHandler:
         tags:
-            - { name: nextdev_adr.responder, priority: -1024 }
+            - { name: pitch_adr.responder, priority: -1024 }
 
-    nextdev\AdrBundle\Util\ClassFinder:
-        factory: '@nextdev\AdrBundle\Util\ClassFinderFactory'
+    Pitch\AdrBundle\Util\ClassFinder:
+        factory: '@Pitch\AdrBundle\Util\ClassFinderFactory'
 
-    nextdev\AdrBundle\Util\ClassFinderFactory:
+    Pitch\AdrBundle\Util\ClassFinderFactory:

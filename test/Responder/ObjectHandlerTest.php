@@ -1,5 +1,5 @@
 <?php
-namespace nextdev\AdrBundle\Responder;
+namespace Pitch\AdrBundle\Responder;
 
 use stdClass;
 use Symfony\Component\HttpFoundation\Response;

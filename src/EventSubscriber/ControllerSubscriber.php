@@ -1,8 +1,8 @@
 <?php
-namespace nextdev\AdrBundle\EventSubscriber;
+namespace Pitch\AdrBundle\EventSubscriber;
 
-use nextdev\AdrBundle\Action\ActionProxy;
-use nextdev\AdrBundle\Configuration\Graceful;
+use Pitch\AdrBundle\Action\ActionProxy;
+use Pitch\AdrBundle\Configuration\Graceful;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;

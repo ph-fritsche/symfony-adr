@@ -1,5 +1,5 @@
 <?php
-namespace nextdev\AdrBundle\Configuration;
+namespace Pitch\AdrBundle\Configuration;
 
 use RuntimeException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationInterface;

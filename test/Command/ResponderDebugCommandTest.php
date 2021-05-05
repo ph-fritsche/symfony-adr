@@ -1,8 +1,8 @@
 <?php
-namespace nextdev\AdrBundle\Command;
+namespace Pitch\AdrBundle\Command;
 
-use nextdev\AdrBundle\Responder\Responder;
-use nextdev\AdrBundle\Util\ClassFinder;
+use Pitch\AdrBundle\Responder\Responder;
+use Pitch\AdrBundle\Util\ClassFinder;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 

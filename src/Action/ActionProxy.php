@@ -1,8 +1,8 @@
 <?php
-namespace nextdev\AdrBundle\Action;
+namespace Pitch\AdrBundle\Action;
 
 use Throwable;
-use nextdev\AdrBundle\Configuration\Graceful;
+use Pitch\AdrBundle\Configuration\Graceful;
 
 class ActionProxy
 {

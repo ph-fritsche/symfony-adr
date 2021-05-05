@@ -1,18 +1,18 @@
 <?php
-namespace nextdev\AdrBundle;
+namespace Pitch\AdrBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use nextdev\AdrBundle\EventSubscriber\AdrSubscriber;
+use Pitch\AdrBundle\EventSubscriber\AdrSubscriber;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use nextdev\AdrBundle\DependencyInjection\NextdevAdrExtension;
-use nextdev\AdrBundle\DependencyInjection\Compiler\ResponseHandlerPass;
+use Pitch\AdrBundle\DependencyInjection\PitchAdrExtension;
+use Pitch\AdrBundle\DependencyInjection\Compiler\ResponseHandlerPass;
 
 /*
  * phpcs:ignoreFile Squiz.Classes.ValidClassName.NotCamelCaps
  * The class needs to be named exactly as the first part of the namespace.
  */
 
-class nextdevAdrBundle extends Bundle
+class pitchAdrBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {
@@ -21,6 +21,6 @@ class nextdevAdrBundle extends Bundle
 
     protected function getContainerExtensionClass(): string
     {
-        return NextdevAdrExtension::class;
+        return PitchAdrExtension::class;
     }
 }

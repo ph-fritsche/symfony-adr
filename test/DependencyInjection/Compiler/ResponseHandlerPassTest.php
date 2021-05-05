@@ -1,13 +1,13 @@
 <?php
-namespace nextdev\AdrBundle\DependencyInjection\Compiler;
+namespace Pitch\AdrBundle\DependencyInjection\Compiler;
 
 use stdClass;
 use LogicException;
-use nextdev\AdrBundle\Responder\Responder;
+use Pitch\AdrBundle\Responder\Responder;
 use Symfony\Component\DependencyInjection\Reference;
-use nextdev\AdrBundle\Responder\ResponsePayloadEvent;
+use Pitch\AdrBundle\Responder\ResponsePayloadEvent;
 use Symfony\Component\DependencyInjection\Definition;
-use nextdev\AdrBundle\Responder\ResponseHandlerInterface;
+use Pitch\AdrBundle\Responder\ResponseHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class ResponseHandlerPassTest extends \PHPUnit\Framework\TestCase

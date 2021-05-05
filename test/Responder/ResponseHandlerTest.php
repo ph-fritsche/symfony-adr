@@ -1,5 +1,5 @@
 <?php
-namespace nextdev\AdrBundle\Responder;
+namespace Pitch\AdrBundle\Responder;
 
 abstract class ResponseHandlerTest extends \PHPUnit\Framework\TestCase
 {

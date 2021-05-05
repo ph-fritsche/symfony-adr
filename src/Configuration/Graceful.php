@@ -1,5 +1,5 @@
 <?php
-namespace nextdev\AdrBundle\Configuration;
+namespace Pitch\AdrBundle\Configuration;
 
 use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Common\Annotations\Annotation\Target;

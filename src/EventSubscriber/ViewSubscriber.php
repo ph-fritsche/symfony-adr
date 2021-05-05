@@ -1,11 +1,11 @@
 <?php
-namespace nextdev\AdrBundle\EventSubscriber;
+namespace Pitch\AdrBundle\EventSubscriber;
 
-use nextdev\AdrBundle\Responder\Responder;
+use Pitch\AdrBundle\Responder\Responder;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
-use nextdev\AdrBundle\Responder\ResponsePayloadEvent;
+use Pitch\AdrBundle\Responder\ResponsePayloadEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ViewSubscriber implements EventSubscriberInterface

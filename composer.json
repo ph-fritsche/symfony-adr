@@ -1,17 +1,23 @@
 {
-    "name": "nextdev/symfony-adr",
+    "name": "pitch/symfony-adr",
     "description": "This bundle makes it easier to follow ADR pattern while writing a Symfony application",
-    "keywords": ["ADR", "Action-Domain-Responder"],
+    "keywords": ["ADR", "Action-Domain-Responder", "Symfony"],
     "type": "symfony-bundle",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Philipp Fritsche",
+            "email": "ph.fritsche@gmail.com"
+        }
+    ],
     "autoload": {
         "psr-4": {
-            "nextdev\\AdrBundle\\": "src/"
+            "Pitch\\AdrBundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "nextdev\\AdrBundle\\": "test/"
+            "Pitch\\AdrBundle\\": "test/"
         }
     },
     "require": {

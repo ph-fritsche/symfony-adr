@@ -1,5 +1,5 @@
 <?php
-namespace nextdev\AdrBundle\DependencyInjection;
+namespace Pitch\AdrBundle\DependencyInjection;
 
 use RuntimeException;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -9,7 +9,7 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder(NextdevAdrExtension::ALIAS);
+        $treeBuilder = new TreeBuilder(PitchAdrExtension::ALIAS);
         
         $treeBuilder->getRootNode()->children()
             ->arrayNode('graceful')

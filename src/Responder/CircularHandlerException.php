@@ -1,5 +1,5 @@
 <?php
-namespace nextdev\AdrBundle\Responder;
+namespace Pitch\AdrBundle\Responder;
 
 use LogicException;
 

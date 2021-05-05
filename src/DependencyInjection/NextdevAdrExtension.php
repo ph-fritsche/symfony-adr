@@ -1,21 +1,21 @@
 <?php
-namespace nextdev\AdrBundle\DependencyInjection;
+namespace Pitch\AdrBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
-use nextdev\AdrBundle\Responder\Responder;
-use nextdev\AdrBundle\Configuration\Graceful;
+use Pitch\AdrBundle\Responder\Responder;
+use Pitch\AdrBundle\Configuration\Graceful;
 use Symfony\Component\DependencyInjection\Reference;
-use nextdev\AdrBundle\EventSubscriber\ViewSubscriber;
+use Pitch\AdrBundle\EventSubscriber\ViewSubscriber;
 use Symfony\Component\DependencyInjection\Definition;
-use nextdev\AdrBundle\EventSubscriber\ControllerSubscriber;
+use Pitch\AdrBundle\EventSubscriber\ControllerSubscriber;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class NextdevAdrExtension extends Extension
+class PitchAdrExtension extends Extension
 {
-    const ALIAS = 'nextdev_adr';
+    const ALIAS = 'pitch_adr';
 
     public function getAlias(): string
     {

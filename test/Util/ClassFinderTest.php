@@ -1,5 +1,5 @@
 <?php
-namespace nextdev\AdrBundle\Util;
+namespace Pitch\AdrBundle\Util;
 
 use ReflectionMethod;
 use ReflectionProperty;

@@ -1,5 +1,5 @@
 <?php
-namespace nextdev\AdrBundle\Util;
+namespace Pitch\AdrBundle\Util;
 
 use Composer\Autoload\ClassLoader;
 use Composer\Autoload\ClassMapGenerator;

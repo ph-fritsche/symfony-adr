@@ -1,5 +1,5 @@
 <?php
-namespace nextdev\AdrBundle\Util;
+namespace Pitch\AdrBundle\Util;
 
 use Composer\Autoload\ClassLoader;
 use Symfony\Component\Config\ConfigCache;
@@ -8,7 +8,7 @@ use Symfony\Component\ErrorHandler\DebugClassLoader;
 
 class ClassFinderFactory
 {
-    const PARAM_CACHE_CLASSES = 'nextdev_adr.classfinder.cache';
+    const PARAM_CACHE_CLASSES = 'pitch_adr.classfinder.cache';
 
     private KernelInterface $kernel;
     private $autoloadStack;

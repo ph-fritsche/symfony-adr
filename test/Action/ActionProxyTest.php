@@ -1,11 +1,11 @@
 <?php
-namespace nextdev\AdrBundle\Action;
+namespace Pitch\AdrBundle\Action;
 
 use LogicException;
 use RuntimeException;
 use OverflowException;
 use OutOfBoundsException;
-use nextdev\AdrBundle\Configuration\Graceful;
+use Pitch\AdrBundle\Configuration\Graceful;
 
 class ActionProxyTest extends \PHPUnit\Framework\TestCase
 {

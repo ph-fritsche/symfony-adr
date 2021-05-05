@@ -1,9 +1,9 @@
 <?php
-namespace nextdev\AdrBundle\Command;
+namespace Pitch\AdrBundle\Command;
 
 use Throwable;
-use nextdev\AdrBundle\Util\ClassFinder;
-use nextdev\AdrBundle\Responder\Responder;
+use Pitch\AdrBundle\Util\ClassFinder;
+use Pitch\AdrBundle\Responder\Responder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

@@ -1,11 +1,11 @@
 <?php
-namespace nextdev\AdrBundle;
+namespace Pitch\AdrBundle;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use nextdev\AdrBundle\DependencyInjection\Compiler\ResponseHandlerPass;
-use nextdev\AdrBundle\DependencyInjection\NextdevAdrExtension;
+use Pitch\AdrBundle\DependencyInjection\Compiler\ResponseHandlerPass;
+use Pitch\AdrBundle\DependencyInjection\PitchAdrExtension;
 
-class NextdevAdrBundleTest extends \PHPUnit\Framework\TestCase
+class PitchAdrBundleTest extends \PHPUnit\Framework\TestCase
 {
     public function testAddCompilerPass()
     {
@@ -14,15 +14,15 @@ class NextdevAdrBundleTest extends \PHPUnit\Framework\TestCase
         $container->expects($this->once())->method('addCompilerPass')
             ->with($this->isInstanceOf(ResponseHandlerPass::class));
 
-        $bundle = new nextdevAdrBundle();
+        $bundle = new pitchAdrBundle();
 
         $bundle->build($container);
     }
 
     public function testGetContainerExtension()
     {
-        $bundle = new nextdevAdrBundle();
+        $bundle = new pitchAdrBundle();
 
-        $this->assertInstanceOf(NextdevAdrExtension::class, $bundle->getContainerExtension());
+        $this->assertInstanceOf(PitchAdrExtension::class, $bundle->getContainerExtension());
     }
 }

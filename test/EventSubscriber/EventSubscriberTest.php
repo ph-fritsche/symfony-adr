@@ -1,5 +1,5 @@
 <?php
-namespace nextdev\AdrBundle\EventSubscriber;
+namespace Pitch\AdrBundle\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
