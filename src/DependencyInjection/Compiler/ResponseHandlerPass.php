@@ -1,7 +1,6 @@
 <?php
 namespace Pitch\AdrBundle\DependencyInjection\Compiler;
 
-use ReflectionClass;
 use Pitch\AdrBundle\Responder\Responder;
 use Symfony\Component\DependencyInjection\Reference;
 use Pitch\AdrBundle\Responder\ResponseHandlerInterface;
@@ -10,21 +9,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Pitch\AdrBundle\DependencyInjection\PitchAdrExtension;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException;
 use Throwable;
 
 class ResponseHandlerPass implements CompilerPassInterface
 {
     const TAG = PitchAdrExtension::ALIAS . '.' . 'responder';
-
-    private ?PitchAdrExtension $extension;
-
-    public function __construct(
-        ?PitchAdrExtension $extension = null
-    ) {
-        $this->extension = $extension;
-    }
 
     public function process(
         ContainerBuilder $container

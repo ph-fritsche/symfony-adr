@@ -141,8 +141,14 @@ class ClassFinderTest extends TestCase
             public static array $willReturn;
             public static $assertEquals;
             public static int $call;
-            public static function createMap($path, $blacklist = null, $io = null, $namespace = null, $autoloadType = null, &$scannedFiles = null)
-            {
+            public static function createMap(
+                $path,
+                $blacklist = null,
+                $io = null,
+                $namespace = null,
+                $autoloadType = null,
+                &$scannedFiles = null
+            ) {
                 $call = static::$call++;
                 (static::$assertEquals)(static::$expected[$call], \func_get_args(), $call);
                 return static::$willReturn[$call];

@@ -14,14 +14,14 @@ class PitchAdrBundleTest extends \PHPUnit\Framework\TestCase
         $container->expects($this->once())->method('addCompilerPass')
             ->with($this->isInstanceOf(ResponseHandlerPass::class));
 
-        $bundle = new pitchAdrBundle();
+        $bundle = new PitchAdrBundle();
 
         $bundle->build($container);
     }
 
     public function testGetContainerExtension()
     {
-        $bundle = new pitchAdrBundle();
+        $bundle = new PitchAdrBundle();
 
         $this->assertInstanceOf(PitchAdrExtension::class, $bundle->getContainerExtension());
     }

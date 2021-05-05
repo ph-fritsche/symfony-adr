@@ -1,7 +1,6 @@
 <?php
 namespace Pitch\AdrBundle\Responder;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Responder

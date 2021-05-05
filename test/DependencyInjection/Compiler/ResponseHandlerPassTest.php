@@ -1,7 +1,6 @@
 <?php
 namespace Pitch\AdrBundle\DependencyInjection\Compiler;
 
-use stdClass;
 use LogicException;
 use Pitch\AdrBundle\Responder\Responder;
 use Symfony\Component\DependencyInjection\Reference;
