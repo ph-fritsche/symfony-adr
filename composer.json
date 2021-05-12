@@ -35,8 +35,8 @@
         "doctrine/annotations": "^1.12"
     },
     "scripts": {
-        "lint": "phpcs --standard=ruleset.xml src test",
-        "lint-fix" : "phpcbf --standard=ruleset.xml src test",
+        "lint": "phpcs",
+        "lint-fix" : "phpcbf",
         "test": "phpunit",
         "test-s": "phpunit --stop-on-failure"
     }
