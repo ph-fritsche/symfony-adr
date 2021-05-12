@@ -34,7 +34,7 @@
         "mikey179/vfsstream": "^1.6"
     },
     "suggest": {
-        "sensio/framework-extra-bundle": "^5.5"
+        "sensio/framework-extra-bundle": "^6"
     },
     "scripts": {
         "lint": "phpcs --standard=ruleset.xml src test",
