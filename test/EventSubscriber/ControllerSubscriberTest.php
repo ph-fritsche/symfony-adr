@@ -35,6 +35,28 @@ class ControllerSubscriberTest extends EventSubscriberTest
         ], $event->getRequest()->attributes->get('_' . Graceful::class));
     }
 
+    public function testReadAttributes()
+    {
+        $event = $this->getControllerEvent(new class {
+            #[Graceful(['value' => 'Foo'])]
+            #[Graceful('Bar', not: 'Baz')]
+            public function __invoke()
+            {
+            }
+        });
+
+        $this->getSubscriberObject([], false)->onKernelController($event);
+        $this->assertEquals(
+            PHP_MAJOR_VERSION >= 8
+            ? [
+                new Graceful(['value' => 'Foo']),
+                new Graceful(['value' => 'Bar', 'not' => 'Baz']),
+            ]
+            : [],
+            $event->getRequest()->attributes->get('_' . Graceful::class)
+        );
+    }
+
     public function provideGraceful(): array
     {
         return [

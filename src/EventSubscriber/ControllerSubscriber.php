@@ -4,6 +4,7 @@ namespace Pitch\AdrBundle\EventSubscriber;
 use Doctrine\Common\Annotations\Reader;
 use Pitch\AdrBundle\Action\ActionProxy;
 use Pitch\AdrBundle\Configuration\Graceful;
+use ReflectionAttribute;
 use ReflectionMethod;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -44,7 +45,21 @@ class ControllerSubscriber implements EventSubscriberInterface
             ? $this->reader->getMethodAnnotations($reflMethod)
             : [];
 
-        $event->getRequest()->attributes->set('_' . Graceful::class, $annotations);
+        $attributes = PHP_MAJOR_VERSION >= 8
+            ? \array_map(
+                function (ReflectionAttribute $a) {
+                    $class = $a->getName();
+                    $args = $a->getArguments();
+                    if (isset($args[0]) && \is_array($args[0])) {
+                        return $a->newInstance();
+                    }
+                    return new $class(['value' => $args[0], 'not' => $args['not']]);
+                },
+                $reflMethod->getAttributes(Graceful::class, ReflectionAttribute::IS_INSTANCEOF),
+            )
+            : [];
+
+        $event->getRequest()->attributes->set('_' . Graceful::class, [...$annotations, ...$attributes]);
     }
 
     public function onKernelControllerArguments(ControllerArgumentsEvent $event)

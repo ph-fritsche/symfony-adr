@@ -80,9 +80,27 @@ use Pitch\AdrBundle\Configuration\Graceful;
 class MyController
 {
     /**
-     * @Graceful(not={LocallyBadException::class})
+     * @Graceful(not=LocallyBadException::class)
      * @Graceful(LocallyGoodException::class, not={ButNotThisOne::class, OrThatOne::class})
      */
+    public function __invoke(
+        Request $request
+    ) {
+        /// ...
+    }
+}
+```
+
+With PHP8 you can define extra rules per [Attribute](https://www.php.net/manual/en/language.attributes.overview.php):
+```php
+namespace App\Controller;
+
+use Pitch\AdrBundle\Configuration\Graceful;
+
+class MyController
+{
+    #[Graceful(not: LocallyBadException::class)]
+    #[Graceful(LocallyGoodException::class, not: [ButNotThisOne::class, OrThatOne::class])]
     public function __invoke(
         Request $request
     ) {
