@@ -10,8 +10,11 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder(PitchAdrExtension::ALIAS);
+
+        /** @var ArrayNodeDefinition */
+        $root = $treeBuilder->getRootNode();
         
-        $treeBuilder->getRootNode()->children()
+        $root->children()
             ->arrayNode('graceful')
                 ->defaultValue([
                         ['value' => RuntimeException::class]
