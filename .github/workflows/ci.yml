@@ -11,9 +11,7 @@ jobs:
     strategy:
       matrix:
         php: ['7.4', '8.0']
-        include:
-          - php: '7.4'
-            dependency-versions: 'highest'
+        dependencies: ['lowest', 'highest']
 
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +21,7 @@ jobs:
         php-version: ${{ matrix.php }}
     - uses: ramsey/composer-install@v1
       with:
-        dependency-versions: ${{ matrix.dependency-versions }}
+        dependency-versions: ${{ matrix.dependencies }}
 
     - run: composer lint
     - run: composer test
