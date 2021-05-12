@@ -65,6 +65,7 @@ class ControllerSubscriberTest extends EventSubscriberTest
 
         if (\count($expectedGraceful)) {
             $this->assertInstanceOf(ActionProxy::class, $controller);
+            /** @var object $controller */
             $this->assertEquals($expectedGraceful, $controller->graceful);
         } else {
             $this->assertNotInstanceOf(ActionProxy::class, $controller);
