@@ -43,7 +43,7 @@ abstract class ConfigurationAnnotation
 
     private function typecast(
         &$value,
-        ?ReflectionType $type,
+        ?ReflectionType $type
     ) {
         if ($type instanceof ReflectionNamedType
             && gettype($value) !== $type->getName()

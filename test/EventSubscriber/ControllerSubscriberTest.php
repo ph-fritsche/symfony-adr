@@ -130,7 +130,7 @@ class ControllerSubscriberTest extends EventSubscriberTest
     }
 
     protected function getControllerEvent(
-        callable $controller,
+        callable $controller
     ): ControllerEvent {
         return new ControllerEvent(
             $this->createMock(HttpKernelInterface::class),
@@ -161,7 +161,7 @@ class ControllerSubscriberTest extends EventSubscriberTest
 
     protected function getSubscriberObject(
         array $globalGraceful = [],
-        bool $reader = false,
+        bool $reader = false
     ): ControllerSubscriber {
         return new ControllerSubscriber(
             $reader ? new AnnotationReader() : null,
