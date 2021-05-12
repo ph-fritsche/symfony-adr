@@ -1,22 +1,35 @@
 <?php
 namespace Pitch\AdrBundle\Configuration;
 
+use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionProperty;
+use ReflectionType;
 use RuntimeException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationInterface;
 
-abstract class ConfigurationAnnotation implements ConfigurationInterface
+abstract class ConfigurationAnnotation
 {
-    const ALLOW_ARRAY = false;
-    const ALIAS_NAME = null;
-
     public function __construct(
         array $values = []
     ) {
         foreach ($values as $propertyName => $v) {
             $setterName = 'set' . \ucwords($propertyName);
             if (\method_exists($this, $setterName)) {
+                $reflMethod = new ReflectionMethod($this, $setterName);
+
+                $this->typecast(
+                    $v,
+                    $reflMethod->getNumberOfParameters() >= 1
+                        ? $reflMethod->getParameters()[0]->getType()
+                        : null,
+                );
+
                 $this->$setterName($v);
             } elseif (\property_exists($this, $propertyName)) {
+                $reflProp = new ReflectionProperty($this, $propertyName);
+
+                $this->typecast($v, $reflProp->getType());
+
                 $this->$propertyName = $v;
             } else {
                 throw new RuntimeException(\sprintf(
@@ -28,13 +41,15 @@ abstract class ConfigurationAnnotation implements ConfigurationInterface
         }
     }
 
-    public function allowArray(): bool
-    {
-        return static::ALLOW_ARRAY;
-    }
-
-    public function getAliasName(): ?string
-    {
-        return static::ALIAS_NAME;
+    private function typecast(
+        &$value,
+        ?ReflectionType $type,
+    ) {
+        if ($type instanceof ReflectionNamedType
+            && gettype($value) !== $type->getName()
+            && !is_a($value, $type->getName())
+        ) {
+            settype($value, $type->getName());
+        }
     }
 }

@@ -70,7 +70,7 @@ pitch_adr:
         - { value: Bar, not: BadBar }
 ```
 
-If [SensioFrameworkExtraBundle](https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/index.html) is installed,
+If [Doctrine Annotations](https://github.com/doctrine/annotations/) is installed,
 you can define extra rules for your controller methods per annotation:
 ```php
 namespace App\Controller;
@@ -80,8 +80,8 @@ use Pitch\AdrBundle\Configuration\Graceful;
 class MyController
 {
     /**
-     * @Graceful(not={LocallyBadException})
-     * @Graceful(LocallyGoodException, not={ButNotThisOne, OrThatOne})
+     * @Graceful(not={LocallyBadException::class})
+     * @Graceful(LocallyGoodException::class, not={ButNotThisOne::class, OrThatOne::class})
      */
     public function __invoke(
         Request $request
