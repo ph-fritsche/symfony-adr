@@ -27,6 +27,7 @@ class ControllerSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
+            KernelEvents::CONTROLLER => ['onKernelController', -1024],
             KernelEvents::CONTROLLER_ARGUMENTS => ['onKernelControllerArguments', -1024],
         ];
     }
