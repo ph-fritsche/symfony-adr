@@ -16,6 +16,7 @@ class PitchAdrBundleTest extends \PHPUnit\Framework\TestCase
 
         $bundle = new PitchAdrBundle();
 
+        /** @var ContainerBuilder $container */
         $bundle->build($container);
     }
 

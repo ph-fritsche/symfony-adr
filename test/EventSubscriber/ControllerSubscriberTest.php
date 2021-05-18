@@ -1,62 +1,14 @@
 <?php
 namespace Pitch\AdrBundle\EventSubscriber;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Pitch\AdrBundle\Action\ActionProxy;
 use Pitch\AdrBundle\Configuration\Graceful;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
-use Symfony\Component\HttpKernel\Event\ControllerEvent;
 
 class ControllerSubscriberTest extends EventSubscriberTest
 {
-    public function testReadAnnotations()
-    {
-        $event = $this->getControllerEvent(new class {
-            /**
-             * @Graceful("Foo")
-             * @Graceful("Bar", not={"Baz"})
-             */
-            public function __invoke()
-            {
-            }
-        });
-
-        // without Doctrine Annotations
-        $this->getSubscriberObject([], false)->onKernelController($event);
-        $this->assertEquals([], $event->getRequest()->attributes->get('_' . Graceful::class));
-
-        // with Doctrine Annotations
-        $this->getSubscriberObject([], true)->onKernelController($event);
-        $this->assertEquals([
-            new Graceful(['value' => 'Foo']),
-            new Graceful(['value' => 'Bar', 'not' => 'Baz']),
-        ], $event->getRequest()->attributes->get('_' . Graceful::class));
-    }
-
-    public function testReadAttributes()
-    {
-        $event = $this->getControllerEvent(new class {
-            #[Graceful(['value' => 'Foo'])]
-            #[Graceful('Bar', not: 'Baz')]
-            public function __invoke()
-            {
-            }
-        });
-
-        $this->getSubscriberObject([], false)->onKernelController($event);
-        $this->assertEquals(
-            PHP_MAJOR_VERSION >= 8
-            ? [
-                new Graceful(['value' => 'Foo']),
-                new Graceful(['value' => 'Bar', 'not' => 'Baz']),
-            ]
-            : [],
-            $event->getRequest()->attributes->get('_' . Graceful::class)
-        );
-    }
-
     public function provideGraceful(): array
     {
         return [
@@ -129,17 +81,6 @@ class ControllerSubscriberTest extends EventSubscriberTest
         return \array_map(fn($g) => new Graceful($g), $gracefulList);
     }
 
-    protected function getControllerEvent(
-        callable $controller
-    ): ControllerEvent {
-        return new ControllerEvent(
-            $this->createMock(HttpKernelInterface::class),
-            $controller,
-            new Request(),
-            HttpKernelInterface::MASTER_REQUEST,
-        );
-    }
-
     /**
      * @param Graceful[] $controllerGraceful
      */
@@ -149,8 +90,11 @@ class ControllerSubscriberTest extends EventSubscriberTest
         $request = new Request();
         $request->attributes->set('_' . Graceful::class, $controllerGraceful);
 
+        /** @var HTTPKernelInterface */
+        $httpKernel = $this->createMock(HttpKernelInterface::class);
+
         return  new ControllerArgumentsEvent(
-            $this->createMock(HttpKernelInterface::class),
+            $httpKernel,
             function () {
             },
             [],
@@ -164,7 +108,6 @@ class ControllerSubscriberTest extends EventSubscriberTest
         bool $reader = false
     ): ControllerSubscriber {
         return new ControllerSubscriber(
-            $reader ? new AnnotationReader() : null,
             $globalGraceful,
         );
     }
