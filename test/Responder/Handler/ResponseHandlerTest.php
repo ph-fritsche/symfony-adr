@@ -1,5 +1,8 @@
 <?php
-namespace Pitch\AdrBundle\Responder;
+namespace Pitch\AdrBundle\Responder\Handler;
+
+use Pitch\AdrBundle\Responder\ResponseHandlerInterface;
+use Pitch\AdrBundle\Responder\ResponsePayloadEvent;
 
 abstract class ResponseHandlerTest extends \PHPUnit\Framework\TestCase
 {

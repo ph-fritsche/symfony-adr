@@ -1,5 +1,8 @@
 <?php
-namespace Pitch\AdrBundle\Responder;
+namespace Pitch\AdrBundle\Responder\Handler;
+
+use Pitch\AdrBundle\Responder\ResponseHandlerInterface;
+use Pitch\AdrBundle\Responder\ResponsePayloadEvent;
 
 class ScalarHandler implements ResponseHandlerInterface
 {

@@ -16,11 +16,11 @@ services:
 
     Pitch\AdrBundle\Responder\Responder:
 
-    Pitch\AdrBundle\Responder\ScalarHandler:
+    Pitch\AdrBundle\Responder\Handler\ScalarHandler:
         tags:
             - { name: pitch_adr.responder, priority: -1024 }
 
-    Pitch\AdrBundle\Responder\ObjectHandler:
+    Pitch\AdrBundle\Responder\Handler\ObjectHandler:
         tags:
             - { name: pitch_adr.responder, priority: -1024 }
 

@@ -1,5 +1,7 @@
 <?php
-namespace Pitch\AdrBundle\Responder;
+namespace Pitch\AdrBundle\Responder\Handler;
+
+use Pitch\AdrBundle\Responder\ResponseHandlerInterface;
 
 class ScalarHandlerTest extends ResponseHandlerTest
 {
