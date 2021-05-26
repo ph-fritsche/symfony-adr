@@ -5,7 +5,7 @@ use Symfony\Component\Config\FileLocator;
 use Pitch\AdrBundle\EventSubscriber\ControllerSubscriber;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
 class PitchAdrExtension extends Extension
 {
@@ -18,11 +18,14 @@ class PitchAdrExtension extends Extension
 
     public function load(array $configs, ContainerBuilder $container)
     {
+        $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+
+        $loader->load('adr.php');
+        $loader->load('debug.php');
+        $loader->load('handler.php');
+
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
-
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.yaml');
 
         $container->findDefinition(ControllerSubscriber::class)->setArgument('$globalGraceful', $config['graceful']);
     }
