@@ -113,3 +113,7 @@ Rules are applied in the order of appearance, method rules after global rules.
 
 Now you can just create a `App\Responder\MyGoodRuntimeExceptionHandler` as described above.
 
+### Default response handlers
+
+The bundle automatically adds some response handlers for basic types with negative priority so that they will be called if none of your response handlers stops propagation earlier.
+If you don't want the default handlers to be added, you can set `pitch_adr.defaultResponseHandlers: false` on your container parameters.

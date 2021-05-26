@@ -18,14 +18,17 @@ class PitchAdrExtension extends Extension
 
     public function load(array $configs, ContainerBuilder $container)
     {
+        $configuration = $this->getConfiguration($configs, $container);
+        $config = $this->processConfiguration($configuration, $configs);
+
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
 
         $loader->load('adr.php');
         $loader->load('debug.php');
-        $loader->load('handler.php');
 
-        $configuration = $this->getConfiguration($configs, $container);
-        $config = $this->processConfiguration($configuration, $configs);
+        if ($config[static::ALIAS . '.defaultResponseHandlers'] ?? true) {
+            $loader->load('handler.php');
+        }
 
         $container->findDefinition(ControllerSubscriber::class)->setArgument('$globalGraceful', $config['graceful']);
     }
