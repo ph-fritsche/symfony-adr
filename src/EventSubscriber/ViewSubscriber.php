@@ -27,9 +27,10 @@ class ViewSubscriber implements EventSubscriberInterface
 
     public function onKernelView(ViewEvent $event)
     {
-        $payloadEvent = new ResponsePayloadEvent();
-        $payloadEvent->payload = $event->getControllerResult();
-        $payloadEvent->request = $event->getRequest();
+        $payloadEvent = new ResponsePayloadEvent(
+            $event->getControllerResult(),
+            $event->getRequest(),
+        );
 
         $result = $this->responder->handleResponsePayload($payloadEvent);
 

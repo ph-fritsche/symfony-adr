@@ -4,6 +4,7 @@ namespace Pitch\AdrBundle\Responder;
 use stdClass;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class ResponderTest extends \PHPUnit\Framework\TestCase
 {
@@ -250,7 +251,7 @@ class ResponderTest extends \PHPUnit\Framework\TestCase
     private function getResponsePayloadEvent(
         $payload
     ): ResponsePayloadEvent {
-        $event = new ResponsePayloadEvent();
+        $event = new ResponsePayloadEvent($payload, new Request());
         $event->payload = $payload;
 
         return $event;

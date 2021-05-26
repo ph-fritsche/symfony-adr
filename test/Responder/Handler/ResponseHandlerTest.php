@@ -3,6 +3,7 @@ namespace Pitch\AdrBundle\Responder\Handler;
 
 use Pitch\AdrBundle\Responder\ResponseHandlerInterface;
 use Pitch\AdrBundle\Responder\ResponsePayloadEvent;
+use Symfony\Component\HttpFoundation\Request;
 
 abstract class ResponseHandlerTest extends \PHPUnit\Framework\TestCase
 {
@@ -26,10 +27,9 @@ abstract class ResponseHandlerTest extends \PHPUnit\Framework\TestCase
         $expectedPayload,
         $expectedStop = false
     ) {
-        $event = new ResponsePayloadEvent();
+        $event = new ResponsePayloadEvent($payload, new Request());
         $handler = $this->getResponseHandler();
 
-        $event->payload = $payload;
         $handler->handleResponsePayload($event);
 
         $this->assertEquals($expectedPayload, $event->payload);
