@@ -4,6 +4,7 @@ namespace Pitch\AdrBundle;
 use Pitch\AdrBundle\Action\ActionProxy;
 use Pitch\AdrBundle\Fixtures\MyException;
 use Pitch\AdrBundle\Fixtures\MyResponseHandler;
+use Pitch\AdrBundle\Fixtures\MyResponsePayload;
 use Pitch\AdrBundle\PitchAdrBundle;
 use Pitch\Annotation\PitchAnnotationBundle;
 use RuntimeException;
@@ -139,6 +140,10 @@ class PitchAdrBundleTest extends KernelTestCase
         $this->boot();
 
         $event = $this->dispatchViewEvent('foo');
+
+        $this->assertEquals(['value' => 'foo'], $event->getControllerResult());
+
+        $event = $this->dispatchViewEvent(new MyResponsePayload());
 
         $this->assertEquals(['value' => 'foo'], $event->getControllerResult());
     }

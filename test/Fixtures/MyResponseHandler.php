@@ -9,7 +9,7 @@ class MyResponseHandler implements ResponseHandlerInterface
     public function getSupportedPayloadTypes(): array
     {
         return [
-            MyResponseHandler::class,
+            MyResponsePayload::class,
         ];
     }
 
