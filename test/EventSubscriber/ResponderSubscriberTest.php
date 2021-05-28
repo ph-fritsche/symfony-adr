@@ -8,7 +8,7 @@ use Pitch\AdrBundle\Responder\ResponsePayloadEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class ViewSubscriberTest extends EventSubscriberTest
+class ResponderSubscriberTest extends EventSubscriberTest
 {
     public function provideRelayPayload(): array
     {
@@ -54,7 +54,7 @@ class ViewSubscriberTest extends EventSubscriberTest
 
     protected function getSubscriberObject(
         Responder $responderMock = null
-    ): ViewSubscriber {
-        return new ViewSubscriber($responderMock ?? $this->createMock(Responder::class));
+    ): ResponderSubscriber {
+        return new ResponderSubscriber($responderMock ?? $this->createMock(Responder::class));
     }
 }

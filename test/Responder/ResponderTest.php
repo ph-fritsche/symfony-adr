@@ -2,7 +2,6 @@
 namespace Pitch\AdrBundle\Responder;
 
 use stdClass;
-use PHPUnit\Framework\Assert;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -126,6 +125,47 @@ class ResponderTest extends \PHPUnit\Framework\TestCase
                 [],
                 CircularHandlerException::class,
             ],
+            'prioritised handlers' => [
+                'stringPayload',
+                [
+                    'string' => [
+                        'A',
+                        'pA',
+                        'pB',
+                        'pC',
+                        'B',
+                        'pD',
+                        'pE',
+                        'C',
+                    ],
+                    'int' => [
+                        'pA',
+                        'pB',
+                        'pC',
+                    ],
+                ],
+                [
+                    ['A'],
+                    ['pB'],
+                    ['pA'],
+                    ['pC'],
+                    ['B'],
+                    ['pE', 'set' => 1],
+                    ['pC'],
+                    ['pA'],
+                ],
+                [
+                    'C',
+                ],
+                null,
+                [
+                    'pA' => 0,
+                    'pB' => [10, null],
+                    'pC' => [0, 1],
+                    'pD' => .5,
+                    'pE' => 1,
+                ],
+            ],
         ];
     }
 
@@ -137,10 +177,11 @@ class ResponderTest extends \PHPUnit\Framework\TestCase
         $handlerMap,
         $expectedHandlers,
         $expectedContainerGet = [],
-        $expectedException = null
+        $expectedException = null,
+        $handlerPriorities = []
     ) {
         $event = $this->getResponsePayloadEvent($payload);
-        $responder = $this->getResponder($handlerMap, $expectedHandlers, $expectedContainerGet);
+        $responder = $this->getResponder($handlerMap, $expectedHandlers, $expectedContainerGet, $handlerPriorities);
 
         if (isset($expectedException)) {
             $this->expectException($expectedException);
@@ -149,85 +190,30 @@ class ResponderTest extends \PHPUnit\Framework\TestCase
         $responder->handleResponsePayload($event);
     }
 
-    private function getResponder($handlerMap, $expectedHandlers, $expectedContainerGet): Responder
+    private function getResponder($handlerMap, $expectedHandlers, $expectedContainerGet, $handlerPriorities): Responder
     {
         $handlerObjects = [];
+        foreach (\array_keys($handlerPriorities) as $id) {
+            $handlerObjects[$id] = [];
+        }
+        foreach ($expectedContainerGet as $id) {
+            $handlerObjects[$id] = [];
+        }
         foreach ($expectedHandlers as &$description) {
             if (\is_string($description)) {
                 $description = [$description];
             }
-            $handlerObjects[$description[0]][] = $description;
+            $id = $description[0];
+            $handlerObjects[$id][] = $description;
         }
-    
-        $positionAssert = new class($expectedHandlers) {
-            private $expectedHandlers;
-            private $actualHandlers = [];
 
-            public function __construct($expectedHandlers)
-            {
-                $this->expectedHandlers = $expectedHandlers;
-            }
+        $positionAssert = new HandlerPositionsAssert($expectedHandlers);
 
-            public function __destruct()
-            {
-                if (\count($this->expectedHandlers) !== \count($this->actualHandlers)) {
-                    Assert::assertEquals(
-                        \array_column($this->expectedHandlers, 0),
-                        $this->actualHandlers,
-                        'Expected handler calls missing.'
-                    );
-                }
-            }
-
-            public function check(
-                string $key
-            ): void {
-                Assert::assertEquals(
-                    $this->expectedHandlers[\count($this->actualHandlers)][0] ?? null,
-                    $key,
-                    \sprintf('Unexpected handler call at position "%d"', \count($this->actualHandlers))
-                );
-                $this->actualHandlers[] = $key;
-            }
-        };
-
-        $handlerObjects = \array_map(
-            fn($descriptions) => new class(
-            $positionAssert,
-            $descriptions
-            ) implements ResponseHandlerInterface
-            {
-                public function __construct($positionAssert, $descriptions)
-                {
-                    $this->positionAssert = $positionAssert;
-                    $this->descriptions = $descriptions;
-                    $this->key = $this->descriptions[0][0];
-                    $this->callCount = 0;
-                }
-
-                public function getSupportedPayloadTypes(): array
-                {
-                    return [];
-                }
-
-                public function handleResponsePayload(
-                    ResponsePayloadEvent $event
-                ) {
-                    $call = $this->callCount++;
-
-                    $this->positionAssert->check($this->key);
-
-                    if (\array_key_exists('set', $this->descriptions[$call])) {
-                        $event->payload = $this->descriptions[$call]['set'];
-                    }
-
-                    if (\array_key_exists('stop', $this->descriptions[$call])) {
-                        $event->stopPropagation = (bool) $this->descriptions[$call]['stop'];
-                    }
-                }
-            },
-            $handlerObjects
-        );
+        foreach ($handlerObjects as $id => $descriptions) {
+            $handlerObjects[$id] = isset($handlerPriorities[$id])
+                ? new TestPrioritisedResponseHandler($id, $positionAssert, $descriptions, $handlerPriorities[$id])
+                : new TestResponseHandler($id, $positionAssert, $descriptions);
+        }
 
         $expectedContainerGetObjects = [];
         foreach ($expectedContainerGet as $i => $id) {

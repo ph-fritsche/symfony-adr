@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 
-class ControllerSubscriberTest extends EventSubscriberTest
+class GracefulSubscriberTest extends EventSubscriberTest
 {
     public function provideGraceful(): array
     {
@@ -50,11 +50,9 @@ class ControllerSubscriberTest extends EventSubscriberTest
         $globalGraceful,
         $controllerGraceful
     ) {
-        $controllerSubscriber = $this->getSubscriberObject($globalGraceful);
-
         $event = $this->getControllerArgumentsEvent($this->getGracefulForArray($controllerGraceful));
 
-        $controllerSubscriber->onKernelControllerArguments($event);
+        $this->getSubscriberObject($globalGraceful)->onKernelControllerArguments($event);
 
         $controller = $event->getController();
 
@@ -106,8 +104,8 @@ class ControllerSubscriberTest extends EventSubscriberTest
     protected function getSubscriberObject(
         array $globalGraceful = [],
         bool $reader = false
-    ): ControllerSubscriber {
-        return new ControllerSubscriber(
+    ): GracefulSubscriber {
+        return new GracefulSubscriber(
             $globalGraceful,
         );
     }

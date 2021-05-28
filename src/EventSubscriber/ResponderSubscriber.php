@@ -1,6 +1,7 @@
 <?php
 namespace Pitch\AdrBundle\EventSubscriber;
 
+use Pitch\AdrBundle\Configuration\DefaultContentType;
 use Pitch\AdrBundle\Responder\Responder;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -8,14 +9,17 @@ use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Pitch\AdrBundle\Responder\ResponsePayloadEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class ViewSubscriber implements EventSubscriberInterface
+class ResponderSubscriber implements EventSubscriberInterface
 {
     private Responder $responder;
+    private ?string $defaultContentType;
 
     public function __construct(
-        Responder $responder
+        Responder $responder,
+        ?string $defaultContentType = null
     ) {
         $this->responder = $responder;
+        $this->defaultContentType = $defaultContentType;
     }
 
     public static function getSubscribedEvents()
@@ -27,9 +31,17 @@ class ViewSubscriber implements EventSubscriberInterface
 
     public function onKernelView(ViewEvent $event)
     {
+        $request = $event->getRequest();
+        if ($this->defaultContentType && !$request->attributes->has('_' . DefaultContentType::class)) {
+            $request->attributes->set(
+                '_' . DefaultContentType::class,
+                new DefaultContentType($this->defaultContentType),
+            );
+        }
+
         $payloadEvent = new ResponsePayloadEvent(
             $event->getControllerResult(),
-            $event->getRequest(),
+            $request,
         );
 
         $result = $this->responder->handleResponsePayload($payloadEvent);

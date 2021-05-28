@@ -21,7 +21,8 @@ class Responder
      */
     private array $handlerMap = [];
 
-    /** @var
+    /**
+     * @var ResponseHandlerInterface[] $handlerObjects
      * [id => object]
      */
     private array $handlerObjects = [];
@@ -61,39 +62,112 @@ class Responder
             }
 
             foreach ($types as $t) {
-                foreach ($this->handlerMap[$t] ?? [] as $stackEntry) {
-                    $serviceId = \is_array($stackEntry)? $stackEntry['name'] ?? $stackEntry[0] : (string) $stackEntry;
+                $stack = $this->handlerMap[$t] ?? [];
+                
+                do {
+                    $prioritisedHandlers = [];
+                    $currentHandler = null;
+                    while ($stackEntry = \current($stack)) {
+                        $serviceId = \is_array($stackEntry)
+                            ? $stackEntry['name'] ?? $stackEntry[0]
+                            : (string) $stackEntry;
 
-                    if (!isset($this->handlerObjects[$serviceId])) {
-                        $this->handlerObjects[$serviceId] = $this->container->get($serviceId);
+                        if (!isset($this->handlerObjects[$serviceId])) {
+                            $this->handlerObjects[$serviceId] = $this->container->get($serviceId);
+                        }
+
+                        \next($stack);
+
+                        if ($this->handlerObjects[$serviceId] instanceof PrioritisedResponseHandlerInterface) {
+                            $prioritisedHandlers[] = $serviceId;
+                            continue;
+                        } else {
+                            $currentHandler = $serviceId;
+                            break;
+                        }
                     }
 
-                    if (isset($usedHandlersPayload[$serviceId])
-                        && \in_array($payloadEvent->payload, $usedHandlersPayload[$serviceId], true)
-                    ) {
-                        throw new CircularHandlerException($usedHandlersLog);
+                    $handlers = \count($prioritisedHandlers)
+                        ? $this->sortPrioritisedHandlers($prioritisedHandlers, $payloadEvent)
+                        : [];
+                    if (isset($currentHandler)) {
+                        $handlers[] = $currentHandler;
                     }
 
-                    $oldPayload = $payloadEvent->payload;
+                    $continueHandling = $this->applyHandlers(
+                        $usedHandlersLog,
+                        $usedHandlersPayload,
+                        $t,
+                        $handlers,
+                        $payloadEvent,
+                    );
 
-                    $this->handlerObjects[$serviceId]->handleResponsePayload($payloadEvent);
-
-                    if ($payloadEvent->stopPropagation) {
+                    if ($continueHandling === true) {
+                        continue 3;
+                    } elseif ($continueHandling === false) {
                         break 3;
                     }
-
-                    if ($payloadEvent->payload !== $oldPayload) {
-                        $usedHandlersPayload[$serviceId][] = $oldPayload;
-                        $usedHandlersLog[] = [$serviceId, $t];
-
-                        continue 3;
-                    }
-                }
+                } while ($currentHandler !== null);
             }
 
             break;
         } while (true);
 
         return $payloadEvent->payload;
+    }
+
+    /**
+     * @param string[] $prioritisedHandlers
+     * @return string[]
+     */
+    protected function sortPrioritisedHandlers(
+        array $prioritisedHandlers,
+        ResponsePayloadEvent $responsePayloadEvent
+    ): array {
+        /** @var PrioritisedResponseHandlerInterface[] */
+        $handlers = &$this->handlerObjects;
+        $priorities = [];
+        foreach ($prioritisedHandlers as $i => $id) {
+            $priorities[$id] = $handlers[$id]->getResponseHandlerPriority($responsePayloadEvent);
+            if ($priorities[$id] === null) {
+                unset($prioritisedHandlers[$i]);
+            }
+        }
+
+        uasort($prioritisedHandlers, fn(string $id0, string $id1) => $priorities[$id1] <=> $priorities[$id0]);
+
+        return $prioritisedHandlers;
+    }
+
+    protected function applyHandlers(
+        array &$usedHandlersLog,
+        array &$usedHandlersPayload,
+        string $type,
+        array $handlers,
+        ResponsePayloadEvent $payloadEvent
+    ): ?bool {
+        foreach ($handlers as $serviceId) {
+            if (isset($usedHandlersPayload[$serviceId])
+                && \in_array($payloadEvent->payload, $usedHandlersPayload[$serviceId], true)
+            ) {
+                throw new CircularHandlerException($usedHandlersLog);
+            }
+
+            $oldPayload = $payloadEvent->payload;
+
+            $this->handlerObjects[$serviceId]->handleResponsePayload($payloadEvent);
+
+            if ($payloadEvent->stopPropagation) {
+                return false;
+            }
+
+            if ($payloadEvent->payload !== $oldPayload) {
+                $usedHandlersPayload[$serviceId][] = $oldPayload;
+                $usedHandlersLog[] = [$serviceId, $type];
+
+                return true;
+            }
+        }
+        return null;
     }
 }

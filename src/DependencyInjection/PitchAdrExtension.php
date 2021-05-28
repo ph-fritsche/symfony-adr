@@ -2,7 +2,8 @@
 namespace Pitch\AdrBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
-use Pitch\AdrBundle\EventSubscriber\ControllerSubscriber;
+use Pitch\AdrBundle\EventSubscriber\GracefulSubscriber;
+use Pitch\AdrBundle\EventSubscriber\ResponderSubscriber;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
@@ -10,6 +11,7 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 class PitchAdrExtension extends Extension
 {
     const ALIAS = 'pitch_adr';
+    const PARAMETER_DEFAULT_CONTENT_TYPE = 'pitch_adr.defaultContentType';
 
     public function getAlias(): string
     {
@@ -30,6 +32,13 @@ class PitchAdrExtension extends Extension
             $loader->load('handler.php');
         }
 
-        $container->findDefinition(ControllerSubscriber::class)->setArgument('$globalGraceful', $config['graceful']);
+        $container->findDefinition(GracefulSubscriber::class)->setArgument('$globalGraceful', $config['graceful']);
+
+        $container->findDefinition(ResponderSubscriber::class)->setArgument(
+            '$defaultContentType',
+            $container->hasParameter(static::PARAMETER_DEFAULT_CONTENT_TYPE)
+                ? $container->getParameter(static::PARAMETER_DEFAULT_CONTENT_TYPE)
+                : null,
+        );
     }
 }

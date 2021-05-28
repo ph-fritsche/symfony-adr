@@ -7,7 +7,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 
-class ControllerSubscriber implements EventSubscriberInterface
+class GracefulSubscriber implements EventSubscriberInterface
 {
     private array $globalGraceful;
 

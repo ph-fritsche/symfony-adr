@@ -1,6 +1,7 @@
 <?php
 namespace Pitch\AdrBundle;
 
+use Closure;
 use Pitch\AdrBundle\Action\ActionProxy;
 use Pitch\AdrBundle\Fixtures\MyException;
 use Pitch\AdrBundle\Fixtures\MyResponseHandler;
@@ -24,6 +25,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class PitchAdrBundleTest extends KernelTestCase
 {
+    public static ?Closure $containerConfigurator = null;
     protected EventDispatcher $dispatcher;
 
     protected static function getKernelClass()
@@ -51,11 +53,14 @@ class PitchAdrBundleTest extends KernelTestCase
                 });
 
                 $loader->load(function (ContainerBuilder $containerBuilder) {
-                    $containerBuilder->setDefinition(
-                        'myHandler',
-                        new Definition(MyResponseHandler::class),
-                    );
+                    // this disables content-type specific default response handlers
+                    $containerBuilder->setParameter('pitch_adr.defaultContentType', 'foo/bar');
                 });
+
+                if (isset(PitchAdrBundleTest::$containerConfigurator)) {
+                    $config = PitchAdrBundleTest::$containerConfigurator;
+                    $config($loader);
+                }
             }
         });
     }
@@ -65,6 +70,14 @@ class PitchAdrBundleTest extends KernelTestCase
         self::bootKernel();
 
         $this->dispatcher = self::$kernel->getContainer()->get('event_dispatcher');
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->dispatcher);
+        $this::$containerConfigurator = null;
+
+        parent::tearDown();
     }
 
     protected function dispatchControllerArgumentsEvent(
@@ -141,7 +154,22 @@ class PitchAdrBundleTest extends KernelTestCase
 
         $event = $this->dispatchViewEvent('foo');
 
+        $this->assertFalse($event->hasResponse());
         $this->assertEquals(['value' => 'foo'], $event->getControllerResult());
+    }
+
+    public function testCustomResponseHandler()
+    {
+        static::$containerConfigurator = function (LoaderInterface $loader) {
+            $loader->load(function (ContainerBuilder $containerBuilder) {
+                $containerBuilder->setDefinition(
+                    'myHandler',
+                    new Definition(MyResponseHandler::class),
+                );
+            });
+        };
+
+        $this->boot();
 
         $event = $this->dispatchViewEvent(new MyResponsePayload());
 
