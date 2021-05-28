@@ -175,4 +175,32 @@ class PitchAdrBundleTest extends KernelTestCase
 
         $this->assertEquals(['value' => 'foo'], $event->getControllerResult());
     }
+
+    public function testDefaultJsonResponse()
+    {
+        static::$containerConfigurator = function (LoaderInterface $loader) {
+            $loader->load(function (ContainerBuilder $containerBuilder) {
+                $containerBuilder->setParameter('pitch_adr.defaultContentType', null);
+            });
+        };
+
+        $this->boot();
+
+        $event = $this->dispatchViewEvent('foo');
+
+        $this->assertTrue($event->hasResponse());
+        $this->assertEquals('{"value":"foo"}', $event->getResponse()->getContent());
+    }
+
+    public function testNegotiatedJsonResponse()
+    {
+        $this->boot();
+
+        $request = new Request();
+        $request->headers->set('accept', 'text/plain, application/json;q=0.5');
+        $event = $this->dispatchViewEvent('foo', $request);
+
+        $this->assertTrue($event->hasResponse());
+        $this->assertEquals('{"value":"foo"}', $event->getResponse()->getContent());
+    }
 }
