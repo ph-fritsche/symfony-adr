@@ -10,9 +10,11 @@ This bundle makes it easier to follow ADR pattern while writing a [Symfony](http
 
 Decouple responder logic from action logic by moving it out of the controller. Just return the payload!
 
-If a controller returns anything but a `Response` object, Symfony dispatches a `kernel.view` event.
+If a controller returns anything but a [`Response`](https://symfony.com/doc/current/components/http_foundation.html#response) object,
+Symfony dispatches a `kernel.view` event.
 
-Now instead of registering a bunch of event listeners to be iterated through, implement `ResponseHandlerInterface`.
+Now instead of registering a bunch of event listeners to be iterated through,
+implement [`ResponseHandlerInterface`](https://github.com/ph-fritsche/symfony-adr/blob/master/src/Responder/ResponseHandlerInterface.php).
 
 ```php
 namespace App\Responder;
@@ -52,6 +54,38 @@ it will be discovered and used whenever a `MyPayload` object is returned by a co
 
 With default config just put the class into `src/Responder/MyPayloadHandler.php` and you are done.
 
+Your response handler can report its priority in `getSupportedTypes`.
+```php
+class MyPayloadHandler implements ResponseHandlerInterface
+{
+    public function getSupportedPayloadTypes(): array
+    {
+        return [
+            MyPayload::class => 123,
+            MyOtherPayload:class => 456,
+        ];
+    }
+    //...
+}
+```
+
+Or you can overwrite the handled types and priorities for response handlers in your `services.yml`.
+```yml
+services:
+  App\Responder\MyPayloadHandler:
+    tags:
+      - name: pitch_adr.responder
+        for: [App\Entity\MyPayload]
+        priority: 1000
+      - name: pitch_adr.responder
+        for: [App\Entity\MyOtherPayload]
+        priority: 0
+```
+
+You can easily debug your responder config per console command.
+```
+$ php bin/console debug:responder MyPayload
+```
 
 ### Treat some exceptions as response payload
 
@@ -117,3 +151,50 @@ Now you can just create a `App\Responder\MyGoodRuntimeExceptionHandler` as descr
 
 The bundle automatically adds some response handlers for basic types with negative priority so that they will be called if none of your response handlers stops propagation earlier.
 If you don't want the default handlers to be added, you can set `pitch_adr.defaultResponseHandlers: false` on your container parameters.
+
+### Prioritised response handlers
+
+If consecutive response handlers (in the order of config priority) implement [`PrioritisedResponseHandlerInterface`](https://github.com/ph-fritsche/symfony-adr/blob/master/src/Responder/PrioritisedResponseHandlerInterface.php), that block of handlers will be reordered on runtime according the priority they report for the specific request per `getResponseHandlerPriority`.
+
+```
+Given the following response handlers are configured to handle a `SomePayloadType`:
+
+900: HandlerA
+600: PrioritisedHandler1 with getResponseHandlerPriority(): 1
+500: PrioritisedHandler2 with getResponseHandlerPriority(): 2
+400: PrioritisedHandler3 with getResponseHandlerPriority(): 0
+100: HandlerB
+
+these will be executed in the following order:
+
+HandlerA
+PrioritisedHandler2
+PrioritisedHandler1
+PrioritisedHandler3
+HandlerB
+```
+
+### Negotiating content type in response handlers
+
+See [`JsonResponder`](https://github.com/ph-fritsche/symfony-adr/blob/master/src/Responder/Handler/JsonResponder.php) on how to implement your own prioritised response handlers that handle a payload according to the [Accept](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept) header on the request.
+
+You can set a default content type for requests that don't include an Accept header.
+This can be done per container parameter or as controller annotation.
+
+```yml
+parameters:
+    pitch_adr.defaultContentType: 'application/json'
+```
+
+```php
+use Pitch\AdrBundle\Configuration\DefaultContentType;
+
+class MyController
+{
+    #[DefaultContentType('application/json')]
+    public function __invoke()
+    {
+        // ...
+    }
+}
+```
