@@ -150,7 +150,11 @@ Now you can just create a `App\Responder\MyGoodRuntimeExceptionHandler` as descr
 ### Default response handlers
 
 The bundle automatically adds some response handlers for basic types with negative priority so that they will be called if none of your response handlers stops propagation earlier.
-If you don't want the default handlers to be added, you can set `pitch_adr.defaultResponseHandlers: false` on your container parameters.
+If you don't want the default handlers to be added, you can modify this behavior per bundle configuration.
+```yaml
+pitch_adr:
+    defaultResponseHandlers: false # defaults to true
+```
 
 ### Prioritised response handlers
 

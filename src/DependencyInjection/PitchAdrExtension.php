@@ -28,7 +28,7 @@ class PitchAdrExtension extends Extension
         $loader->load('adr.php');
         $loader->load('debug.php');
 
-        if ($config[static::ALIAS . '.defaultResponseHandlers'] ?? true) {
+        if ($config['defaultResponseHandlers']) {
             $loader->load('handler.php');
         }
 

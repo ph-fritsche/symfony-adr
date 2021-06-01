@@ -2,6 +2,7 @@
 namespace Pitch\AdrBundle\DependencyInjection;
 
 use RuntimeException;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -13,31 +14,28 @@ class Configuration implements ConfigurationInterface
 
         /** @var ArrayNodeDefinition */
         $root = $treeBuilder->getRootNode();
-        
-        $root->children()
-            ->arrayNode('graceful')
-                ->defaultValue([
-                        ['value' => RuntimeException::class]
-                    ])
-                ->arrayPrototype()
-                ->beforeNormalization()
-                    ->ifString()->then(function ($v) {
-                        return [ 'value' => $v ];
-                    })
-                ->end()
-                ->children()
-                    ->scalarNode('value')->end()
-                    ->arrayNode('not')
-                        ->beforeNormalization()
-                            ->ifString()->then(function ($v) {
-                                return [ $v ];
-                            })
-                        ->end()
-                        ->scalarPrototype()->end()
-                    ->end()
-                ->end()
-            ->end()
-        ->end();
+        $rootChildren = $root->children();
+
+        $graceful = $rootChildren->arrayNode('graceful');
+        $graceful->defaultValue([
+            ['value' => RuntimeException::class]
+        ]);
+        $gracefulPrototype = $graceful->arrayPrototype();
+        $gracefulPrototype->beforeNormalization()
+            ->ifString()->then(function ($v) {
+                return [ 'value' => $v ];
+            });
+        $gracefulChildren = $gracefulPrototype->children();
+        $gracefulChildren->scalarNode('value');
+        $gracefulNot = $gracefulChildren->arrayNode('not');
+        $gracefulNot->beforeNormalization()
+            ->ifString()->then(function ($v) {
+                return [ $v ];
+            });
+        $gracefulNot->scalarPrototype();
+
+        $rootChildren->booleanNode('defaultResponseHandlers')
+            ->defaultValue(true);
 
         return $treeBuilder;
     }

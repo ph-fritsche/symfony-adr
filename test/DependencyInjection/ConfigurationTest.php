@@ -11,35 +11,25 @@ class ConfigurationTest extends \PHPUnit\Framework\TestCase
     {
         return [
             [
-                [],
+                null,
                 [
-                    'graceful' => [
-                        ['value' => RuntimeException::class],
-                    ],
+                    ['value' => RuntimeException::class],
                 ],
             ],
             [
                 [
-                    'graceful' => [
-                        RuntimeException::class,
-                    ]
+                    RuntimeException::class,
                 ],
                 [
-                    'graceful' => [
-                        ['value' => RuntimeException::class, 'not' => []],
-                    ],
+                    ['value' => RuntimeException::class, 'not' => []],
                 ],
             ],
             [
                 [
-                    'graceful' => [
-                        ['value' => RuntimeException::class, 'not' => OutOfBoundsException::class],
-                    ],
+                    ['value' => RuntimeException::class, 'not' => OutOfBoundsException::class],
                 ],
                 [
-                    'graceful' => [
-                        ['value' => RuntimeException::class, 'not' => [OutOfBoundsException::class]],
-                    ],
+                    ['value' => RuntimeException::class, 'not' => [OutOfBoundsException::class]],
                 ],
             ],
         ];
@@ -48,12 +38,33 @@ class ConfigurationTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider provideNormalize
      */
-    public function testNormalize(
+    public function testNormalizeGraceful(
         $config,
-        $processedConfig
+        $expectedProcessedGraceful
     ) {
-        $processor = new Processor();
+        $processedConfig = $this->processConfig(isset($config) ? [
+            'graceful' => $config
+        ] : []);
 
-        $this->assertEquals($processedConfig, $processor->processConfiguration(new Configuration(), [$config]));
+        $this->assertArrayHasKey('graceful', $processedConfig);
+        $this->assertEquals($expectedProcessedGraceful, $processedConfig['graceful']);
+    }
+
+    public function testDefaultResponseHandlers()
+    {
+        $this->assertTrue($this->processConfig()['defaultResponseHandlers']);
+
+        $this->assertFalse($this->processConfig([
+            'defaultResponseHandlers' => false,
+        ])['defaultResponseHandlers']);
+    }
+
+    private function processConfig(
+        array ...$configs
+    ) {
+        return (new Processor())->processConfiguration(
+            new Configuration(),
+            $configs,
+        );
     }
 }
