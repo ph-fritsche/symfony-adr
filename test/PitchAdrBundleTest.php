@@ -30,7 +30,7 @@ class PitchAdrBundleTest extends KernelTestCase
 
     protected static function getKernelClass()
     {
-        return get_class(new class('', true) extends Kernel
+        return get_class(new class('test', true) extends Kernel
         {
             public function getProjectDir()
             {
