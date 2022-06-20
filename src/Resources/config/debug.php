@@ -5,7 +5,8 @@ use Pitch\AdrBundle\Command\ResponderDebugCommand;
 use Pitch\AdrBundle\Util\ClassFinder;
 use Pitch\AdrBundle\Util\ClassFinderFactory;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\DependencyInjection\Reference;
+
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container) {
     $container->parameters()
@@ -17,7 +18,7 @@ return static function (ContainerConfigurator $container) {
         ->set(ResponderDebugCommand::class)
             ->tag('console.command')
         ->set(ClassFinder::class)
-            ->factory(new Reference(ClassFinderFactory::class))
+            ->factory(service(ClassFinderFactory::class))
         ->set(ClassFinderFactory::class)
     ;
 };

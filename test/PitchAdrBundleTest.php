@@ -28,11 +28,11 @@ class PitchAdrBundleTest extends KernelTestCase
     public static ?Closure $containerConfigurator = null;
     protected EventDispatcher $dispatcher;
 
-    protected static function getKernelClass()
+    protected static function getKernelClass(): string
     {
         return get_class(new class('test', true) extends Kernel
         {
-            public function getProjectDir()
+            public function getProjectDir(): string
             {
                 return $this->dir ??= sys_get_temp_dir() . '/PitchForm-' . uniqid() . '/';
             }
