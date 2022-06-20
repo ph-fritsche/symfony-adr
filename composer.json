@@ -24,15 +24,16 @@
         "php": ">=7.4",
         "composer/composer": "^1 || ^2",
         "pitch/annotation": "^1.0",
-        "symfony/config": "^5",
-        "symfony/http-kernel": "^5"
+        "symfony/config": "^5.4.9",
+        "symfony/dependency-injection": "^5.4.9",
+        "symfony/http-kernel": "^5.4.9"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "symfony/framework-bundle": "^5",
-        "squizlabs/php_codesniffer": "^3.6",
-        "mikey179/vfsstream": "^1.6.8",
-        "doctrine/annotations": "^1.12"
+        "phpunit/phpunit": "^9.5.21",
+        "doctrine/annotations": "^1.12",
+        "mikey179/vfsstream": "^1.6.10",
+        "squizlabs/php_codesniffer": "^3.7.1",
+        "symfony/framework-bundle": "^5.4.9"
     },
     "scripts": {
         "lint": "phpcs",

@@ -148,7 +148,7 @@ class ClassFinderTest extends TestCase
                 $namespace = null,
                 $autoloadType = null,
                 &$scannedFiles = null
-            ) {
+            ): array {
                 $call = static::$call++;
                 (static::$assertEquals)(static::$expected[$call], \func_get_args(), $call);
                 return static::$willReturn[$call];
